@@ -43,7 +43,7 @@ class Node:
 
     def delNoneNodes(self, x, tree, d):
         pass
-        '''
+        """
         edge_nodes = tree.edges(d.keys()[d.values().index(x)])
         print edge_nodes
         if len(edge_nodes) == 3:
@@ -51,7 +51,8 @@ class Node:
                 for node in edge:
                     if int(node) > len(d.keys()):
                         tree.remove_node(node)
-        '''
+        """
+
 
     def checkDuplicateEdges(self, x, e):
         edges = tree.edges(d.keys()[d.values().index(x)])
@@ -75,9 +76,14 @@ class Node:
             return k_list
 
     def drawTree(self, tree, filename, d):
+        """
+
+        :param tree:
+        :param filename: name of output dot file
+        :param d: dictionary of nodes with keys as regular indices and values as nodes
+        """
         print self.insertion_step
         ind = len(d.keys()) + 1
-
         for step in self.insertion_step:
             print step[0], step[1], step[2]
 
@@ -123,7 +129,7 @@ class Node:
                 tree.add_node(ind, style='filled', label=step[2])
                 tree.add_edge(d.keys()[d.values().index(step[1])], ind, style='filled')
                 ind += 1
-
+            # ------------------------------------------------------------------------------------
             if not (step[0] is None) and not (step[2] is None):
                 e = (d.keys()[d.values().index(step[1])], d.keys()[d.values().index(step[0])])
                 print
@@ -137,7 +143,15 @@ class Node:
                 if self.checkDuplicateEdges(step[0], e):
                     del d[d.keys()[d.values().index(step[0])]]
                 if not d.keys()[d.values().index(step[1])] == d.keys()[d.values().index(step[0])]:
-                    tree.add_edge(d.keys()[d.values().index(step[1])], d.keys()[d.values().index(step[0])],
+                    dd = tree.successors(d.keys()[d.values().index(step[1])])
+                    if len(dd) == 2:
+                        for it in dd:
+                            if int(it) > len(d.keys()):
+                                del d[d.keys()[d.values().index(step[0])]]
+                                tree.remove_node(it)
+                                d[int(it)] = step[0]
+
+                    tree.add_edge(d.keys()[d.values().index(step[1])], d[d.keys()[d.values().index(step[0])]],
                                   color='sienna',
                                   style='filled')
                 else:
@@ -154,7 +168,17 @@ class Node:
                 if self.checkDuplicateEdges(step[2], e):
                     del d[d.keys()[d.values().index(step[2])]]
                 if not d.keys()[d.values().index(step[1])] == d.keys()[d.values().index(step[2])]:
-                    tree.add_edge(d.keys()[d.values().index(step[1])], d.keys()[d.values().index(step[2])],
+
+                    dd = tree.successors(d.keys()[d.values().index(step[1])])
+                    print dd
+                    if len(dd) == 2:
+                        for it in dd:
+                            if int(it) > len(d.keys()):
+                                del d[d.keys()[d.values().index(step[2])]]
+                                tree.remove_node(it)
+                                d[int(it)] = step[2]
+
+                    tree.add_edge(d.keys()[d.values().index(step[1])], d[d.keys()[d.values().index(step[2])]],
                                   color='sienna',
                                   style='filled')
                 else:
@@ -198,7 +222,8 @@ if __name__ == '__main__':
     filename = 'tree.dot'
     lst = [random.randint(1, 9) for i in range(5)]
     #lst = [8, 9, 2, 4, 5, 4, 5, 9, 1, 3, 5, 7, 1, 3, 7]
-    #lst = [5, 9, 6, 8, 5]
+    #lst = [5, 9, 6, 8, 5] # working perfectly
+    lst = [2, 4, 8, 2, 6]
     print lst
     d = {}
     for i in range(len(lst)):
